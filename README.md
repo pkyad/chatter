@@ -105,5 +105,66 @@ function we will be using-
      // set audio/video button according to the permission
     }
 
-           
+ Event listeners - 
+ 
+        // input text field 
+ 
+     inputText.addEventListener('keyup',function(e){
+       //set paper plane color on start typing
+      })
+     inputText.addEventListener('keydown',function(e){
+        if(window.innerWidth <= 600) {
+        //its mobile screen
+        // normal functionality
+         return
+        } else {
+         // desktop
+         // on enter send message and on shigt+Enter give a line break
+           sendMessage(inputText.value);
+       }
+
+       // read the input box of visitor
+       spying()
+    })
+      
+      // audio call button
+
+      audioBtn.addEventListener("click",function(){
+       //hide video Button
+       // check that video is not active
+       // check for audio state
+        if(audio is not active currerntly){
+          activeAudioCall()
+        }else{
+          deactivateAudioFrame()
+          hideTheIframeOnAgentSide()
+        }
+        togglingActive(audioBtn,isAudioClicked)
+      })
+      
+      // video call button
+
+      videoBtn.addEventListener("click",function(){
+        //hide audio Button
+       // check that audio is not active
+       // check for video state
+        
+        if(video is not active currerntly){
+           activeVideoCall()
+        }
+        togglingActive(videoBtn,isVideoClicked)
+      })
+
+
+      videoCircle.addEventListener('click',function () {
+        openChat();
+        videoBtn.click()
+      })
+
+      audioCircle.addEventListener('click',function () {
+        openChat();
+        audioBtn.click()
+      })
+
+ 
         
