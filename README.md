@@ -1,5 +1,5 @@
 
-1. Check Cookie - 
+1. Check Cookie for uid - 
 
         uid = getCookie("uid");
          //Check cookie 
@@ -29,12 +29,11 @@
               }
           };
 
-3.after content loading -
+3.After content loading open autohan connection and register/subscribe the visitor to following channels-
 
-    connection.onopen() ->
-      register the visitor to channels - 
+    connection.onopen()
 
-service.support.createDetailCookie -> 
+  a) service.support.createDetailCookie -> 
 
     session.register(wamp_prefix+'service.support.createDetailCookie.'+uid, createCookieDetail).then()
   
@@ -45,7 +44,7 @@ service.support.createDetailCookie ->
         }
   
   
-service.support.heartbeat ->
+ b) service.support.heartbeat ->
 
     session.register(wamp_prefix+'service.support.heartbeat.'+uid, heartbeat).then()
     // for checking if visitor is online
@@ -53,66 +52,83 @@ service.support.heartbeat ->
       return uid
     }
 
-service.support.chat ->
+ c) service.support.chat ->
 
     session.subscribe(wamp_prefix+'service.support.chat.' + uid, supportChat).then()
   
-      in supportChat callback -> check fot the arguments received by this channel such as -
+    // check for the anguments received -
   
-    if(args[0]=='hideVisitorScreen'){
+      if(args[0]=='hideVisitorScreen'){
         // agent has called to hide visitor screen for screen sharing purpose
       }
+    
       else if(args[0]=='ShowVisitorScreen'){
        //// agent has called to show visitor screen for screen sharing purpose
-      }else if(args[0]=='ToggleVisitorVideo'){
+      }
+      
+      else if(args[0]=='ToggleVisitorVideo'){
           //agent has called to minimize video frame
-      }else if(args[0]=='ShowVisitorVideo'){
+      }
+      
+      else if(args[0]=='ShowVisitorVideo'){
         //agent has called to maximize video frame
       }
 
       if (args[0]=='T') {
         // indiacate the $watch on agent's type box (agent is typing)
       }
-      if (args[0]=="M") {
+      
+      else if(args[0]=="M") {
          // message has seen sent by agent
          message = args[1] // set the args[1] to message
          setAgentDetails() //such as name and dp
-      }else if (args[0]=="MF") {
+      }
+      
+      else if (args[0]=="MF") {
        // media file has been sent by agent
         setAgentDetails() //such as name and dp
         //get the media file from api /api/support/supportChat/ 
        // xhttp.open('GET', '{{serverAddress}}/api/support/supportChat/' + args[1].filePk + '/'  , true);
- 
-
-      }else if (args[0]=='ML') {
+      }
+      
+      else if (args[0]=='ML') {
       // media Link received
         setAgentDetails()
          message = args[1] //set the link to message
-      }else if (args[0]=='AP') {
+      }
+      
+      else if (args[0]=='AP') {
         // chat transfered 
         agentPk = args[1]; // set new agent pk 
-      }else if (args[0]=='O') {
+      }
+      
+      else if (args[0]=='O') {
        // agent is online
-      }else if (args[0]=='A') {
+      }
+      
+      else if (args[0]=='A') {
         // chat has been succesfully asigned
-      }else if (args[0]=='F') {
+      }
+      
+      else if (args[0]=='F') {
         // agent has ended the chat open the feedback form 
       }
       
       //create a div element and set the innerHTML to message along with pushing it into chat.message
 
-open the connection-
+Open the connection-
 
         connection.open();
         
-set the UI for chatBox- 
+Set the UI for chatBox- 
 
     function createChatDiv() {
         //create body element
         //create main div
        body.appendChild(mainDiv);
     }
-function we will be using- 
+    
+Functions we will be using- 
     
     function deactivateAudioFrame(){
      //send request to webserver for hiding the audio frame if audio has ended.
@@ -129,12 +145,12 @@ function we will be using-
     function activeVideoCall(){
      // set urlForConfrence for agent and visitor and pass requires params
        openVideoAudioIframe(urlforConference , urlforConferenceForAgent,'video')
-      }
+    }
       
     function activeAudioCall(){
        // set urlForConfrence for agent and visitor and pass requires params
         openVideoAudioIframe(urlforConference , urlforConferenceForAgent , 'audio')
-      }
+    }
       
     function openVideoAudioIframe(urlforConference , urlforConferenceForAgent, streamTyp){
     
@@ -183,29 +199,30 @@ function we will be using-
         }
       
        //set the iFrame in HTML; and html for audio/video depending on streamTyp
-        }
+     }
     
-       function endChat() {
-            chatClosed = true
-            // check if feedback form opend if not than continoue
-            // send patch request to chatThread with data require
-            openFeedback() // open feedback form
-       }
+     function endChat() {
+         chatClosed = true
+         // check if feedback form opend if not than continoue
+          // send patch request to chatThread with data require
+         openFeedback() // open feedback form
+     }
 
 
-       function openFeedback(id) {
+     function openFeedback(id) {
 
-            // hide audio/video button
-            // create a div for offline message
+       // hide audio/video button
+       // create a div for offline message
 
-            var div = document.createElement("div");
-            div.id="offlineMessage"
-            div.innerHTML =  '<div style="margin:0px 0px 10px..........              
-            messageBox.appendChild(div);
-            scroll();
-            // create feedback stars 
-            submitStarForm(id);
-       }
+       var div = document.createElement("div");
+       div.id="offlineMessage"
+       div.innerHTML =  '<div style="margin:0px 0px 10px..........              
+       messageBox.appendChild(div);
+       scroll();
+       // create feedback stars 
+       submitStarForm(id);
+    }
+    
 
       function thankYouMessage() {
         var div = document.createElement("div");
