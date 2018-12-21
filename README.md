@@ -98,11 +98,72 @@ function we will be using-
     function deactivateAudioFrame(){
      //send request to webserver for hiding the audio frame if audio has ended.
     }
+    
     function togglingActive(element,value){
-        //shows active frame - audio/vidoe
+        //shows active frame - audio/video
     }
+    
     function setAudioVideoBtn(){
      // set audio/video button according to the permission
+    }
+    
+    function activeVideoCall(){
+     // set urlForConfrence for agent and visitor and pass requires params
+       openVideoAudioIframe(urlforConference , urlforConferenceForAgent,'video')
+      }
+      
+    function activeAudioCall(){
+       // set urlForConfrence for agent and visitor and pass requires params
+        openVideoAudioIframe(urlforConference , urlforConferenceForAgent , 'audio')
+      }
+      
+    function openVideoAudioIframe(urlforConference , urlforConferenceForAgent, streamTyp){
+    
+        //check if video/audio opened if opened retrun else continue
+
+        var dataToSend = {uid: uid , sentByAgent:false , created: new Date() };
+        // check the streamTyp and set the chatBox html according to it
+        if (agentPk) {
+          dataToSend.user = agentPk
+          if (!isAgentOnline) {
+            dataToSend.user = null
+          }else {
+            dataToSend.user = agentPk
+          }
+        }
+        // JSON.stringify(dataToSend) post data to database
+         xhttp.open('POST', '{{serverAddress}}/api/support/supportChat/', true);
+         xhttp.setRequestHeader("Content-type", "application/json");
+         xhttp.send(dataToSend);
+         if (threadExist==undefined) {
+                dataToPublish = [uid, callType, [] , custID]  // data to publish
+                details = getCookie("uidDetails");
+                //if details exist push it into dataToPublish
+                 var dataToSend = JSON.stringify({uid: uid , company: custID, typ: streamTyp});  //data to send to server
+                 xhttp.open('POST', '{{serverAddress}}/api/support/chatThread/', true);
+                 xhttp.setRequestHeader("Content-type", "application/json");
+                 xhttp.send(dataToSend);
+                 // in response of this request publish the data to channel
+                 connection.session.publish(wamp_prefix+'service.support.agent', dataToPublish , {}, {}).then()
+        }else{
+      
+             xhttp.open('PATCH', '{{serverAddress}}/api/support/chatThread/'+ chatThreadPk + '/', true);
+             xhttp.setRequestHeader("Content-type", "application/json");
+             xhttp.send(JSON.stringify({typ:streamTyp}));
+             dataToPublish = [uid, callType, [] , custID, urlforConferenceForAgent]
+             if (isAgentOnline) {
+                  connection.session.publish(wamp_prefix+'service.support.agent.'+agentPk, dataToPublish , {}, {
+                    acknowledge: true
+                  }).then(function(publication) {}).catch(function(){});
+             }else {
+                 //agent is offline send to all
+                  connection.session.publish(wamp_prefix+'service.support.agent', dataToPublish , {}, {
+                    acknowledge: true
+                  }).then(function(publication) {});
+            }
+        }
+      
+       //set the iFrame in HTML; and html for audio/video depending on streamTyp
     }
 
  Event listeners - 
@@ -124,7 +185,7 @@ function we will be using-
        }
 
        // read the input box of visitor
-       spying()
+       spying() //actively send call back to agent
     })
       
       // audio call button
@@ -157,14 +218,25 @@ function we will be using-
 
 
       videoCircle.addEventListener('click',function () {
-        openChat();
-        videoBtn.click()
+        openChat();     // open chat window
+        videoBtn.click()    //call videoBtn event listener
       })
 
       audioCircle.addEventListener('click',function () {
-        openChat();
-        audioBtn.click()
+        openChat(); // open chat window
+        audioBtn.click()  //call audioBtn event listener
       })
+      
+Showing the options to visitor - 
+      
+       var supportOptions = [ {name:'callCircle' , value:true} , {name:'chatCircle' , value:true}  ]; //.....and more options
 
- 
+        for (var i = 0; i < supportOptions.length; i++) {
+            if (supportOptions[i].name=='callCircle') {
+              supportOptions[i].value = callBackSupport;
+            }
+        //..set the values for each options true/false
+        }
         
+        //set  ui for supportOptions
+
